@@ -11,12 +11,15 @@ export default {
           seq(
             $.object_reference,
             choice($.keyword_to, '='),
-            choice(
-              $.literal,
-              $.keyword_default,
-              $.identifier,
-              $.keyword_on,
-              $.keyword_off,
+            comma_list(
+              choice(
+                $.literal,
+                $.keyword_default,
+                $.identifier,
+                $.keyword_on,
+                $.keyword_off,
+              ),
+              true,
             ),
           ),
           seq($.keyword_schema, $.literal),
@@ -34,20 +37,24 @@ export default {
   ),
 
   _transaction_mode: $ => seq(
-    $.keyword_isolation,
-    $.keyword_level,
-    choice(
-      $.keyword_serializable,
-      seq($.keyword_repeatable, $.keyword_read),
-      seq($.keyword_read, $.keyword_committed),
-      seq($.keyword_read, $.keyword_uncommitted),
+    $._transaction_mode_item,
+    repeat(seq(optional(','), $._transaction_mode_item)),
+  ),
+
+  _transaction_mode_item: $ => choice(
+    seq(
+      $.keyword_isolation,
+      $.keyword_level,
+      choice(
+        $.keyword_serializable,
+        seq($.keyword_repeatable, $.keyword_read),
+        seq($.keyword_read, $.keyword_committed),
+        seq($.keyword_read, $.keyword_uncommitted),
+      ),
     ),
-    choice(
-      seq($.keyword_read, $.keyword_write),
-      seq($.keyword_read, $.keyword_only),
-    ),
-    optional($.keyword_not),
-    $.keyword_deferrable,
+    seq($.keyword_read, $.keyword_write),
+    seq($.keyword_read, $.keyword_only),
+    seq(optional($.keyword_not), $.keyword_deferrable),
   ),
 
   reset_statement: $ => seq(

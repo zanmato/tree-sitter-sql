@@ -1,0 +1,242 @@
+================================================================================
+Grant privileges on table
+================================================================================
+
+GRANT SELECT, INSERT ON t TO me;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (keyword_select))
+      (privilege
+        (keyword_insert))
+      (keyword_on)
+      (object_reference
+        (identifier))
+      (keyword_to)
+      (grantee
+        (identifier)))))
+
+================================================================================
+Grant column privileges
+================================================================================
+
+GRANT UPDATE (a, b) ON TABLE public.t TO me WITH GRANT OPTION;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (keyword_update)
+        (list
+          (column
+            (identifier))
+          (column
+            (identifier))))
+      (keyword_on)
+      (keyword_table)
+      (object_reference
+        (identifier)
+        (identifier))
+      (keyword_to)
+      (grantee
+        (identifier))
+      (keyword_with)
+      (keyword_grant)
+      (keyword_option))))
+
+================================================================================
+Grant all on all tables in schema
+================================================================================
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO me;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (keyword_all)
+        (keyword_privileges))
+      (keyword_on)
+      (keyword_all)
+      (keyword_tables)
+      (keyword_in)
+      (keyword_schema)
+      (object_reference
+        (identifier))
+      (keyword_to)
+      (grantee
+        (identifier)))))
+
+================================================================================
+Grant usage on schema
+================================================================================
+
+GRANT USAGE ON SCHEMA s TO GROUP staff, PUBLIC;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (keyword_usage))
+      (keyword_on)
+      (keyword_schema)
+      (object_reference
+        (identifier))
+      (keyword_to)
+      (grantee
+        (keyword_group)
+        (identifier))
+      (grantee
+        (keyword_public)))))
+
+================================================================================
+Grant execute on function
+================================================================================
+
+GRANT EXECUTE ON FUNCTION f(integer) TO me;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (keyword_execute))
+      (keyword_on)
+      (keyword_function)
+      (object_reference
+        (identifier))
+      (function_arguments
+        (function_argument
+          (int
+            (keyword_int))))
+      (keyword_to)
+      (grantee
+        (identifier)))))
+
+================================================================================
+Grant role membership
+================================================================================
+
+GRANT admin TO joe WITH ADMIN OPTION;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (identifier))
+      (keyword_to)
+      (grantee
+        (identifier))
+      (keyword_with)
+      (keyword_admin)
+      (keyword_option))))
+
+================================================================================
+MySQL grant
+================================================================================
+
+GRANT ALL PRIVILEGES ON *.* TO 'app'@'localhost';
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (keyword_all)
+        (keyword_privileges))
+      (keyword_on)
+      (keyword_to)
+      (grantee
+        (literal)
+        (literal)))))
+
+================================================================================
+MySQL grant on database
+================================================================================
+
+GRANT SELECT ON mydb.* TO 'app'@'%';
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (grant_statement
+      (keyword_grant)
+      (privilege
+        (keyword_select))
+      (keyword_on)
+      (all_fields
+        (object_reference
+          (identifier)))
+      (keyword_to)
+      (grantee
+        (literal)
+        (literal)))))
+
+================================================================================
+Revoke
+================================================================================
+
+REVOKE SELECT ON t FROM me;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (privilege
+        (keyword_select))
+      (keyword_on)
+      (object_reference
+        (identifier))
+      (keyword_from)
+      (grantee
+        (identifier)))))
+
+================================================================================
+Revoke grant option cascade
+================================================================================
+
+REVOKE GRANT OPTION FOR ALL ON SCHEMA s FROM PUBLIC CASCADE;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (revoke_statement
+      (keyword_revoke)
+      (keyword_grant)
+      (keyword_option)
+      (keyword_for)
+      (privilege
+        (keyword_all))
+      (keyword_on)
+      (keyword_schema)
+      (object_reference
+        (identifier))
+      (keyword_from)
+      (grantee
+        (keyword_public))
+      (keyword_cascade))))

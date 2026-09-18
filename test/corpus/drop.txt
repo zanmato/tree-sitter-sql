@@ -365,3 +365,318 @@ DROP MATERIALIZED VIEW myschema.my_view;
       (object_reference
         schema: (identifier)
         name: (identifier)))))
+
+================================================================================
+Drop trigger on table
+================================================================================
+
+DROP TRIGGER product_change_trigger_products ON products;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_trigger
+      (keyword_drop)
+      (keyword_trigger)
+      (object_reference
+        (identifier))
+      (keyword_on)
+      (object_reference
+        (identifier)))))
+
+================================================================================
+Drop trigger if exists cascade
+================================================================================
+
+DROP TRIGGER IF EXISTS my_trigger ON public.products CASCADE;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_trigger
+      (keyword_drop)
+      (keyword_trigger)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        (identifier))
+      (keyword_on)
+      (object_reference
+        (identifier)
+        (identifier))
+      (keyword_cascade))))
+
+================================================================================
+Drop trigger without table
+================================================================================
+
+DROP TRIGGER IF EXISTS my_schema.my_trigger;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_trigger
+      (keyword_drop)
+      (keyword_trigger)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        (identifier)
+        (identifier)))))
+
+================================================================================
+Drop event trigger
+================================================================================
+
+DROP EVENT TRIGGER IF EXISTS my_event_trigger CASCADE;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_event_trigger
+      (keyword_drop)
+      (keyword_event)
+      (keyword_trigger)
+      (keyword_if)
+      (keyword_exists)
+      (identifier)
+      (keyword_cascade))))
+
+================================================================================
+Drop policy
+================================================================================
+
+DROP POLICY IF EXISTS my_policy ON accounts;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_policy
+      (keyword_drop)
+      (keyword_policy)
+      (keyword_if)
+      (keyword_exists)
+      (identifier)
+      (keyword_on)
+      (object_reference
+        (identifier)))))
+
+================================================================================
+Drop rule
+================================================================================
+
+DROP RULE my_rule ON my_table RESTRICT;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_rule
+      (keyword_drop)
+      (keyword_rule)
+      (identifier)
+      (keyword_on)
+      (object_reference
+        (identifier))
+      (keyword_restrict))))
+
+================================================================================
+Drop domain
+================================================================================
+
+DROP DOMAIN IF EXISTS positive_int, negative_int CASCADE;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_domain
+      (keyword_drop)
+      (keyword_domain)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        (identifier))
+      (object_reference
+        (identifier))
+      (keyword_cascade))))
+
+================================================================================
+Drop aggregate
+================================================================================
+
+DROP AGGREGATE my_agg(integer);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_aggregate
+      (keyword_drop)
+      (keyword_aggregate)
+      (object_reference
+        (identifier))
+      (function_arguments
+        (function_argument
+          (int
+            (keyword_int)))))))
+
+================================================================================
+Drop foreign table
+================================================================================
+
+DROP FOREIGN TABLE IF EXISTS my_ft;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_foreign_table
+      (keyword_drop)
+      (keyword_foreign)
+      (keyword_table)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        (identifier)))))
+
+================================================================================
+Drop owned
+================================================================================
+
+DROP OWNED BY my_role, other_role CASCADE;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_owned
+      (keyword_drop)
+      (keyword_owned)
+      (keyword_by)
+      (identifier)
+      (identifier)
+      (keyword_cascade))))
+
+================================================================================
+Drop publication
+================================================================================
+
+DROP PUBLICATION IF EXISTS my_pub;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_object
+      (keyword_drop)
+      (keyword_publication)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        (identifier)))))
+
+================================================================================
+Drop multiple tables
+================================================================================
+
+DROP TABLE IF EXISTS a, public.b CASCADE;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_table
+      (keyword_drop)
+      (keyword_table)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        (identifier))
+      (object_reference
+        (identifier)
+        (identifier))
+      (keyword_cascade))))
+
+================================================================================
+Drop temporary table
+================================================================================
+
+DROP TEMPORARY TABLE tmp;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_table
+      (keyword_drop)
+      (keyword_temporary)
+      (keyword_table)
+      (object_reference
+        (identifier)))))
+
+================================================================================
+Drop function with arguments
+================================================================================
+
+DROP FUNCTION IF EXISTS my_func(integer, text), other_func();
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_function
+      (keyword_drop)
+      (keyword_function)
+      (keyword_if)
+      (keyword_exists)
+      (object_reference
+        (identifier))
+      (function_arguments
+        (function_argument
+          (int
+            (keyword_int)))
+        (function_argument
+          (keyword_text)))
+      (object_reference
+        (identifier))
+      (function_arguments))))
+
+================================================================================
+Drop qualified and multiple indexes
+================================================================================
+
+DROP INDEX public.idx_a, idx_b;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_index
+      (keyword_drop)
+      (keyword_index)
+      (identifier)
+      (identifier)
+      (identifier))))
+
+================================================================================
+Drop multiple schemas
+================================================================================
+
+DROP SCHEMA a, b CASCADE;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (drop_schema
+      (keyword_drop)
+      (keyword_schema)
+      (identifier)
+      (identifier)
+      (keyword_cascade))))

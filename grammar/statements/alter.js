@@ -14,6 +14,7 @@ export default {
       $.alter_role,
       $.alter_sequence,
       $.alter_policy,
+      $.alter_trigger,
     ),
   ),
 
@@ -58,6 +59,9 @@ export default {
     $.rename_column,
     $.set_schema,
     $.change_ownership,
+    $.rename_constraint,
+    $.validate_constraint,
+    $.alter_trigger_state,
   ),
 
   // TODO: optional `keyword_add` is necessary to allow for chained alter statements in t-sql
@@ -74,9 +78,50 @@ export default {
 
   add_constraint: $ => seq(
     $.keyword_add,
-    optional($.keyword_constraint),
-    $.identifier,
+    optional(
+      seq(
+        optional($.keyword_constraint),
+        $.identifier,
+      ),
+    ),
     $.constraint,
+    optional(seq($.keyword_not, $.keyword_valid)),
+  ),
+
+  rename_constraint: $ => seq(
+    $.keyword_rename,
+    $.keyword_constraint,
+    field('old_name', $.identifier),
+    $.keyword_to,
+    field('new_name', $.identifier),
+  ),
+
+  validate_constraint: $ => seq(
+    $.keyword_validate,
+    $.keyword_constraint,
+    $.identifier,
+  ),
+
+  alter_trigger_state: $ => seq(
+    choice($.keyword_enable, $.keyword_disable),
+    optional(choice($.keyword_replica, $.keyword_always)),
+    $.keyword_trigger,
+    choice(
+      $.identifier,
+      $.keyword_all,
+      $.keyword_user,
+    ),
+  ),
+
+  alter_trigger: $ => seq(
+    $.keyword_alter,
+    $.keyword_trigger,
+    $.identifier,
+    $.keyword_on,
+    $.object_reference,
+    $.keyword_rename,
+    $.keyword_to,
+    field('new_name', $.identifier),
   ),
 
   drop_constraint: $ => seq(
@@ -112,6 +157,12 @@ export default {
         ),
         $.keyword_type,
         field('type', $._type),
+        optional(
+          seq(
+            $.keyword_using,
+            $._expression,
+          ),
+        ),
       ),
       seq(
         $.keyword_set,

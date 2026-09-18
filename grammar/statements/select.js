@@ -47,6 +47,9 @@ export default {
         $._select_statement,
       ),
     ),
+    // applies to the whole set when the last operand is parenthesized or has no FROM
+    optional($.order_by),
+    optional($.limit),
   ),
 
   _select_statement: $ => optional_parenthesis(
@@ -66,8 +69,20 @@ export default {
     $.keyword_select,
     seq(
       optional($.keyword_distinct),
+      optional($.top),
       $.select_expression,
     ),
+  ),
+
+  // T-SQL `SELECT TOP 10` and `SELECT TOP (10) PERCENT`
+  top: $ => seq(
+    $.keyword_top,
+    choice(
+      alias($._integer, $.literal),
+      seq('(', choice(alias($._integer, $.literal), $.parameter, $.identifier), ')'),
+    ),
+    optional($.keyword_percent),
+    optional(seq($.keyword_with, $.keyword_ties)),
   ),
 
   select_expression: $ => seq(
@@ -204,7 +219,7 @@ export default {
     field('alias', $.identifier),
   ),
 
-  from: $ => seq(
+  from: $ => prec.right(seq(
     $.keyword_from,
     optional(
       $.keyword_only,
@@ -224,8 +239,14 @@ export default {
     optional($.having),
     optional($.window_clause),
     optional($.order_by),
-    optional($.limit),
-  ),
+    optional(
+      choice(
+        $.limit,
+        $._offset_fetch,
+      ),
+    ),
+    repeat($.locking_clause),
+  )),
 
   relation: $ => prec.right(
     seq(
@@ -275,7 +296,8 @@ export default {
     ),
   ),
 
-  join: $ => seq(
+  // The condition is optional for `NATURAL JOIN` and MySQL's bare `JOIN`
+  join: $ => prec.right(seq(
     optional($.keyword_natural),
     optional(
       choice(
@@ -292,17 +314,19 @@ export default {
     $.relation,
     optional($.index_hint),
     optional($.join),
-    choice(
-      seq(
-        $.keyword_on,
-        field("predicate", $._expression),
+    optional(
+      choice(
+        seq(
+          $.keyword_on,
+          field("predicate", $._expression),
+        ),
+        seq(
+          $.keyword_using,
+          alias($._column_list, $.list),
+        )
       ),
-      seq(
-        $.keyword_using,
-        alias($._column_list, $.list),
-      )
-    )
-  ),
+    ),
+  )),
 
   cross_join: $ => prec.right(
     seq(
@@ -398,39 +422,89 @@ export default {
     comma_list($.order_target, true),
   )),
 
-  order_target: $ => seq(
+  order_target: $ => prec.right(seq(
     $._expression,
     optional(
+      choice(
+        $.direction,
+        seq(
+          $.keyword_using,
+          choice('<', '>', '<=', '>='),
+        ),
+      ),
+    ),
+    optional(
       seq(
+        $.keyword_nulls,
         choice(
-          $.direction,
-          seq(
-            $.keyword_using,
-            choice('<', '>', '<=', '>='),
-          ),
+          $.keyword_first,
+          $.keyword_last,
         ),
-        optional(
-          seq(
-            $.keyword_nulls,
-            choice(
-              $.keyword_first,
-              $.keyword_last,
-            ),
-          ),
-        ),
+      ),
+    ),
+  )),
+
+  limit: $ => seq(
+    $.keyword_limit,
+    choice(
+      $.literal,
+      $.parameter,
+      $.keyword_all,
+    ),
+    optional(
+      choice(
+        $.offset,
+        // MySQL `LIMIT offset, count`
+        seq(',', choice($.literal, $.parameter)),
       ),
     ),
   ),
 
-  limit: $ => seq(
-    $.keyword_limit,
-    $.literal,
-    optional($.offset),
-  ),
-
   offset: $ => seq(
     $.keyword_offset,
-    $.literal,
+    choice(
+      $.literal,
+      $.parameter,
+    ),
+    optional(choice($.keyword_row, $.keyword_rows)),
+  ),
+
+  _offset_fetch: $ => choice(
+    seq($.offset, optional($.fetch)),
+    $.fetch,
+  ),
+
+  fetch: $ => seq(
+    $.keyword_fetch,
+    choice($.keyword_first, $.keyword_next),
+    optional(choice($.literal, $.parameter)),
+    choice($.keyword_row, $.keyword_rows),
+    choice(
+      $.keyword_only,
+      seq($.keyword_with, $.keyword_ties),
+    ),
+  ),
+
+  locking_clause: $ => seq(
+    $.keyword_for,
+    choice(
+      $.keyword_update,
+      seq($.keyword_no, $.keyword_key, $.keyword_update),
+      $.keyword_share,
+      seq($.keyword_key, $.keyword_share),
+    ),
+    optional(
+      seq(
+        $.keyword_of,
+        comma_list($.object_reference, true),
+      ),
+    ),
+    optional(
+      choice(
+        $.keyword_nowait,
+        seq($.keyword_skip, $.keyword_locked),
+      ),
+    ),
   ),
 
   returning: $ => seq(

@@ -1911,3 +1911,188 @@ ALTER MATERIALIZED VIEW myschema.my_view RENAME TO new_view;
         (keyword_to)
         (object_reference
           name: (identifier))))))
+
+================================================================================
+Alter table enable trigger
+================================================================================
+
+ALTER TABLE t ENABLE TRIGGER trg;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        (identifier))
+      (alter_trigger_state
+        (keyword_enable)
+        (keyword_trigger)
+        (identifier)))))
+
+================================================================================
+Alter table disable all triggers
+================================================================================
+
+ALTER TABLE t DISABLE TRIGGER ALL;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        (identifier))
+      (alter_trigger_state
+        (keyword_disable)
+        (keyword_trigger)
+        (keyword_all)))))
+
+================================================================================
+Alter column type using
+================================================================================
+
+ALTER TABLE t ALTER COLUMN a TYPE bigint USING a::bigint;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        (identifier))
+      (alter_column
+        (keyword_alter)
+        (keyword_column)
+        (identifier)
+        (keyword_type)
+        (bigint
+          (keyword_bigint))
+        (keyword_using)
+        (cast
+          (field
+            (identifier))
+          (bigint
+            (keyword_bigint)))))))
+
+================================================================================
+Alter table rename constraint
+================================================================================
+
+ALTER TABLE t RENAME CONSTRAINT a TO b;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        (identifier))
+      (rename_constraint
+        (keyword_rename)
+        (keyword_constraint)
+        (identifier)
+        (keyword_to)
+        (identifier)))))
+
+================================================================================
+Alter table validate constraint
+================================================================================
+
+ALTER TABLE t VALIDATE CONSTRAINT fk;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        (identifier))
+      (validate_constraint
+        (keyword_validate)
+        (keyword_constraint)
+        (identifier)))))
+
+================================================================================
+Alter table add unnamed unique
+================================================================================
+
+ALTER TABLE t ADD UNIQUE (a, b);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        (identifier))
+      (add_constraint
+        (keyword_add)
+        (constraint
+          (keyword_unique)
+          (ordered_columns
+            (column
+              (identifier))
+            (column
+              (identifier))))))))
+
+================================================================================
+Alter table add check not valid
+================================================================================
+
+ALTER TABLE t ADD CONSTRAINT c CHECK (a > 0) NOT VALID;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_table
+      (keyword_alter)
+      (keyword_table)
+      (object_reference
+        (identifier))
+      (add_constraint
+        (keyword_add)
+        (keyword_constraint)
+        (identifier)
+        (constraint
+          (keyword_check)
+          (binary_expression
+            (field
+              (identifier))
+            (literal)))
+        (keyword_not)
+        (keyword_valid)))))
+
+================================================================================
+Alter trigger rename
+================================================================================
+
+ALTER TRIGGER trg ON t RENAME TO trg2;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (alter_trigger
+      (keyword_alter)
+      (keyword_trigger)
+      (identifier)
+      (keyword_on)
+      (object_reference
+        (identifier))
+      (keyword_rename)
+      (keyword_to)
+      (identifier))))

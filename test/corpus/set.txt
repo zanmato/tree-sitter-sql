@@ -91,3 +91,37 @@ RESET ALL;
     (reset_statement
       (keyword_reset)
       (keyword_all))))
+
+================================================================================
+Set with value list
+================================================================================
+
+SET search_path TO a, b;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (set_statement
+      (keyword_set)
+      (object_reference
+        (identifier))
+      (keyword_to)
+      (identifier)
+      (identifier))))
+
+================================================================================
+Set transaction single mode
+================================================================================
+
+SET TRANSACTION READ ONLY;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (set_statement
+      (keyword_set)
+      (keyword_transaction)
+      (keyword_read)
+      (keyword_only))))

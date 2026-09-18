@@ -783,3 +783,85 @@ SELECT OBJECT_ID (N'dbo.LEVENSHTEIN_DISTANCE', N'FN')
             (keyword_object_id)
             (literal)
             (literal)))))))
+
+================================================================================
+Like with escape
+================================================================================
+
+SELECT a FROM t WHERE a LIKE 'x!%' ESCAPE '!';
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          (field
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          (identifier)))
+      (where
+        (keyword_where)
+        (binary_expression
+          (binary_expression
+            (field
+              (identifier))
+            (keyword_like)
+            (literal))
+          (keyword_escape)
+          (literal))))))
+
+================================================================================
+At time zone
+================================================================================
+
+SELECT now() AT TIME ZONE 'UTC';
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          (binary_expression
+            (invocation
+              (object_reference
+                (identifier)))
+            (at_time_zone
+              (keyword_at)
+              (keyword_time)
+              (keyword_zone))
+            (literal)))))))
+
+================================================================================
+Array overlap operator
+================================================================================
+
+SELECT a && b FROM t;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          (binary_expression
+            (field
+              (identifier))
+            (op_other)
+            (field
+              (identifier))))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          (identifier))))))

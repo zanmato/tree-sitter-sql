@@ -3213,3 +3213,344 @@ SELECT * FROM `complex-database.schema_name.table_name`;
       (relation
         (object_reference
           name: (identifier))))))
+
+================================================================================
+Order by nulls without direction
+================================================================================
+
+SELECT a FROM t ORDER BY a DESC NULLS LAST, b NULLS FIRST;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          (field
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          (identifier)))
+      (order_by
+        (keyword_order)
+        (keyword_by)
+        (order_target
+          (field
+            (identifier))
+          (direction
+            (keyword_desc))
+          (keyword_nulls)
+          (keyword_last))
+        (order_target
+          (field
+            (identifier))
+          (keyword_nulls)
+          (keyword_first))))))
+
+================================================================================
+Fetch first
+================================================================================
+
+SELECT a FROM t ORDER BY a OFFSET 5 ROWS FETCH NEXT 5 ROWS ONLY;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          (field
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          (identifier)))
+      (order_by
+        (keyword_order)
+        (keyword_by)
+        (order_target
+          (field
+            (identifier))))
+      (offset
+        (keyword_offset)
+        (literal)
+        (keyword_rows))
+      (fetch
+        (keyword_fetch)
+        (keyword_next)
+        (literal)
+        (keyword_rows)
+        (keyword_only)))))
+
+================================================================================
+Fetch first with ties
+================================================================================
+
+SELECT a FROM t FETCH FIRST ROW WITH TIES;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          (field
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          (identifier)))
+      (fetch
+        (keyword_fetch)
+        (keyword_first)
+        (keyword_row)
+        (keyword_with)
+        (keyword_ties)))))
+
+================================================================================
+MySQL limit with offset
+================================================================================
+
+SELECT a FROM t LIMIT 5, 10;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          (field
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          (identifier)))
+      (limit
+        (keyword_limit)
+        (literal)
+        (literal)))))
+
+================================================================================
+Limit with parameters
+================================================================================
+
+SELECT a FROM t LIMIT $1 OFFSET $2;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          (field
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          (identifier)))
+      (limit
+        (keyword_limit)
+        (parameter)
+        (offset
+          (keyword_offset)
+          (parameter))))))
+
+================================================================================
+Locking clause
+================================================================================
+
+SELECT * FROM t FOR UPDATE SKIP LOCKED;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          (all_fields))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          (identifier)))
+      (locking_clause
+        (keyword_for)
+        (keyword_update)
+        (keyword_skip)
+        (keyword_locked)))))
+
+================================================================================
+Locking clause of table
+================================================================================
+
+SELECT * FROM t FOR NO KEY UPDATE OF t NOWAIT;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          (all_fields))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          (identifier)))
+      (locking_clause
+        (keyword_for)
+        (keyword_no)
+        (keyword_key)
+        (keyword_update)
+        (keyword_of)
+        (object_reference
+          (identifier))
+        (keyword_nowait)))))
+
+================================================================================
+Natural join without condition
+================================================================================
+
+SELECT a FROM t NATURAL JOIN o;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          (field
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          (identifier)))
+      (join
+        (keyword_natural)
+        (keyword_join)
+        (relation
+          (object_reference
+            (identifier)))))))
+
+================================================================================
+Standalone values
+================================================================================
+
+VALUES (1, 'a'), (2, 'b');
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (values
+      (keyword_values)
+      (list
+        (literal)
+        (literal))
+      (list
+        (literal)
+        (literal)))))
+
+================================================================================
+Select top
+================================================================================
+
+SELECT TOP 10 * FROM t;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (top
+        (keyword_top)
+        (literal))
+      (select_expression
+        (term
+          (all_fields))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          (identifier))))))
+
+================================================================================
+Select top percent
+================================================================================
+
+SELECT TOP (10) PERCENT a FROM t;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (select
+      (keyword_select)
+      (top
+        (keyword_top)
+        (literal)
+        (keyword_percent))
+      (select_expression
+        (term
+          (field
+            (identifier)))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          (identifier))))))
+
+================================================================================
+Parenthesized union with order by
+================================================================================
+
+(SELECT 1) UNION (SELECT 2) ORDER BY 1 LIMIT 1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (set_operation
+      (select
+        (keyword_select)
+        (select_expression
+          (term
+            (literal))))
+      (keyword_union)
+      (select
+        (keyword_select)
+        (select_expression
+          (term
+            (literal))))
+      (order_by
+        (keyword_order)
+        (keyword_by)
+        (order_target
+          (literal)))
+      (limit
+        (keyword_limit)
+        (literal)))))

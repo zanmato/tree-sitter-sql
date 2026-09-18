@@ -142,3 +142,62 @@ TRUNCATE TABLE employees CASCADE;
     (object_reference
       (identifier))
     (keyword_cascade)))
+
+================================================================================
+Delete using
+================================================================================
+
+DELETE FROM t USING o WHERE t.id = o.id;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (delete
+      (keyword_delete))
+    (from
+      (keyword_from)
+      (object_reference
+        (identifier))
+      (keyword_using)
+      (relation
+        (object_reference
+          (identifier)))
+      (where
+        (keyword_where)
+        (binary_expression
+          (field
+            (object_reference
+              (identifier))
+            (identifier))
+          (field
+            (object_reference
+              (identifier))
+            (identifier)))))))
+
+================================================================================
+Delete with alias
+================================================================================
+
+DELETE FROM t AS x WHERE x.id = 1;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (delete
+      (keyword_delete))
+    (from
+      (keyword_from)
+      (object_reference
+        (identifier))
+      (keyword_as)
+      (identifier)
+      (where
+        (keyword_where)
+        (binary_expression
+          (field
+            (object_reference
+              (identifier))
+            (identifier))
+          (literal))))))

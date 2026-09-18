@@ -119,7 +119,9 @@ export default {
     $._check_constraint
   ),
 
-  _constraint_literal: $ => seq(
+  // loses to `ADD CONSTRAINT name <constraint>` in alter table, which names the
+  // constraint itself
+  _constraint_literal: $ => prec(-1, seq(
     $.keyword_constraint,
     field('name', $.identifier),
     choice(
@@ -131,7 +133,7 @@ export default {
         $._check_constraint
       )
     )
-  ),
+  )),
 
   _primary_key_constraint: $ => seq(
     $._primary_key,

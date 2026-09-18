@@ -717,3 +717,152 @@ COPY some_table (a, b, c) FROM STDIN WITH
     (keyword_match)
     (keyword_null)
     (identifier)))
+
+================================================================================
+Insert on conflict with target
+================================================================================
+
+INSERT INTO t (a) VALUES (1) ON CONFLICT (a) DO UPDATE SET a = EXCLUDED.a RETURNING *;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (insert
+      (keyword_insert)
+      (keyword_into)
+      (object_reference
+        (identifier))
+      (list
+        (column
+          (identifier)))
+      (keyword_values)
+      (list
+        (literal))
+      (keyword_on)
+      (keyword_conflict)
+      (conflict_target
+        (field
+          (identifier)))
+      (keyword_do)
+      (keyword_update)
+      (keyword_set)
+      (assignment
+        (field
+          (identifier))
+        (field
+          (object_reference
+            (identifier))
+          (identifier))))
+    (returning
+      (keyword_returning)
+      (select_expression
+        (term
+          (all_fields))))))
+
+================================================================================
+Insert on conflict partial index target
+================================================================================
+
+INSERT INTO t (a) VALUES (1) ON CONFLICT (a) WHERE a > 0 DO NOTHING;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (insert
+      (keyword_insert)
+      (keyword_into)
+      (object_reference
+        (identifier))
+      (list
+        (column
+          (identifier)))
+      (keyword_values)
+      (list
+        (literal))
+      (keyword_on)
+      (keyword_conflict)
+      (conflict_target
+        (field
+          (identifier))
+        (where
+          (keyword_where)
+          (binary_expression
+            (field
+              (identifier))
+            (literal))))
+      (keyword_do)
+      (keyword_nothing))))
+
+================================================================================
+Insert on conflict on constraint
+================================================================================
+
+INSERT INTO t (a) VALUES (1) ON CONFLICT ON CONSTRAINT t_pkey DO NOTHING;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (insert
+      (keyword_insert)
+      (keyword_into)
+      (object_reference
+        (identifier))
+      (list
+        (column
+          (identifier)))
+      (keyword_values)
+      (list
+        (literal))
+      (keyword_on)
+      (keyword_conflict)
+      (conflict_target
+        (keyword_on)
+        (keyword_constraint)
+        (identifier))
+      (keyword_do)
+      (keyword_nothing))))
+
+================================================================================
+Insert default values
+================================================================================
+
+INSERT INTO t DEFAULT VALUES;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (insert
+      (keyword_insert)
+      (keyword_into)
+      (object_reference
+        (identifier))
+      (keyword_default)
+      (keyword_values))))
+
+================================================================================
+Insert or replace
+================================================================================
+
+INSERT OR REPLACE INTO t (a) VALUES (1);
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (insert
+      (keyword_insert)
+      (keyword_or)
+      (keyword_replace)
+      (keyword_into)
+      (object_reference
+        (identifier))
+      (list
+        (column
+          (identifier)))
+      (keyword_values)
+      (list
+        (literal)))))

@@ -29,6 +29,8 @@ export default grammar({
     [$.object_reference],
     [$.between_expression, $.binary_expression],
     [$.time],
+    [$.transaction, $.transaction_statement, $.block],
+    [$.transaction, $.transaction_statement],
     [$.timestamp],
   ],
 
@@ -60,6 +62,7 @@ export default grammar({
         seq(
           choice(
             $.transaction,
+            $.transaction_statement,
             $.statement,
             $.block,
           ),
@@ -68,7 +71,10 @@ export default grammar({
       ),
       // optionally, a single statement without a terminating ;
       optional(
-        $.statement,
+        choice(
+          $.transaction_statement,
+          $.statement,
+        ),
       ),
     ),
 

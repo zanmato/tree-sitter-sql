@@ -215,6 +215,7 @@ export default {
       '>>=',
       '##',
       '<->',
+      '&&',
       '@>',
       '<@',
       '&<',
@@ -261,6 +262,8 @@ export default {
       [$.keyword_is, 'binary_is'],
       [$.is_not, 'binary_is'],
       [$.keyword_like, 'pattern_matching'],
+      [$.keyword_escape, 'pattern_matching'],
+      [$.at_time_zone, 'binary_other'],
       [$.not_like, 'pattern_matching'],
       [$.keyword_rlike, 'pattern_matching'],
       [$.not_rlike, 'pattern_matching'],
@@ -298,6 +301,8 @@ export default {
       ))
     ),
   ),
+
+  at_time_zone: $ => seq($.keyword_at, $.keyword_time, $.keyword_zone),
 
   op_unary_other: $ => token(
     choice(

@@ -1,4 +1,4 @@
-import { comma_list } from "../helpers.js";
+import { comma_list, paren_list } from "../helpers.js";
 
 export default {
 
@@ -20,6 +20,18 @@ export default {
       ),
     ),
     optional($.keyword_ignore),
+    // SQLite conflict resolution, `INSERT OR REPLACE`
+    optional(
+      seq(
+        $.keyword_or,
+        choice(
+          $.keyword_replace,
+          $.keyword_ignore,
+          $.keyword_rollback,
+          $.keyword_abort,
+        ),
+      ),
+    ),
     optional(
       choice(
         $.keyword_into,
@@ -38,6 +50,7 @@ export default {
     choice(
       $._insert_values,
       $._set_values,
+      seq($.keyword_default, $.keyword_values),
     ),
     optional(
       choice(
@@ -50,6 +63,7 @@ export default {
   _on_conflict: $ => seq(
     $.keyword_on,
     $.keyword_conflict,
+    optional($.conflict_target),
     seq(
       $.keyword_do,
       choice(
@@ -60,6 +74,18 @@ export default {
           optional($.where),
         ),
       ),
+    ),
+  ),
+
+  conflict_target: $ => choice(
+    seq(
+      paren_list($._expression, true),
+      optional($.where),
+    ),
+    seq(
+      $.keyword_on,
+      $.keyword_constraint,
+      $.identifier,
     ),
   ),
 

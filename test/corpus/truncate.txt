@@ -1,0 +1,19 @@
+================================================================================
+Truncate restart identity
+================================================================================
+
+TRUNCATE TABLE a, b RESTART IDENTITY CASCADE;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (keyword_truncate)
+    (keyword_table)
+    (object_reference
+      (identifier))
+    (object_reference
+      (identifier))
+    (keyword_restart)
+    (keyword_identity)
+    (keyword_cascade)))

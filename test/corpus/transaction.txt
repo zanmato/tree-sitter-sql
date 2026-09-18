@@ -121,3 +121,118 @@ ROLLBACK TRANSACTION;
             (keyword_null)))))
     (keyword_rollback)
     (keyword_transaction)))
+
+================================================================================
+Standalone begin
+================================================================================
+
+BEGIN;
+
+--------------------------------------------------------------------------------
+
+(program
+  (transaction_statement
+    (keyword_begin)))
+
+================================================================================
+Standalone commit
+================================================================================
+
+COMMIT;
+
+--------------------------------------------------------------------------------
+
+(program
+  (transaction_statement
+    (keyword_commit)))
+
+================================================================================
+Standalone rollback
+================================================================================
+
+ROLLBACK TRANSACTION;
+
+--------------------------------------------------------------------------------
+
+(program
+  (transaction_statement
+    (keyword_rollback)
+    (keyword_transaction)))
+
+================================================================================
+Start transaction with modes
+================================================================================
+
+START TRANSACTION ISOLATION LEVEL SERIALIZABLE, READ ONLY;
+
+--------------------------------------------------------------------------------
+
+(program
+  (transaction_statement
+    (keyword_start)
+    (keyword_transaction)
+    (keyword_isolation)
+    (keyword_level)
+    (keyword_serializable)
+    (keyword_read)
+    (keyword_only)))
+
+================================================================================
+Savepoints
+================================================================================
+
+SAVEPOINT sp;
+ROLLBACK TO SAVEPOINT sp;
+RELEASE SAVEPOINT sp;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (savepoint_statement
+      (keyword_savepoint)
+      (identifier)))
+  (statement
+    (savepoint_statement
+      (keyword_rollback)
+      (keyword_to)
+      (keyword_savepoint)
+      (identifier)))
+  (statement
+    (savepoint_statement
+      (keyword_release)
+      (keyword_savepoint)
+      (identifier))))
+
+================================================================================
+Savepoint inside transaction
+================================================================================
+
+BEGIN;
+SAVEPOINT sp;
+DELETE FROM t;
+ROLLBACK TO sp;
+COMMIT;
+
+--------------------------------------------------------------------------------
+
+(program
+  (transaction
+    (keyword_begin)
+    (statement
+      (savepoint_statement
+        (keyword_savepoint)
+        (identifier)))
+    (statement
+      (delete
+        (keyword_delete))
+      (from
+        (keyword_from)
+        (object_reference
+          (identifier))))
+    (statement
+      (savepoint_statement
+        (keyword_rollback)
+        (keyword_to)
+        (identifier)))
+    (keyword_commit)))

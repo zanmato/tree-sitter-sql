@@ -1,4 +1,4 @@
-import { optional_parenthesis, wrapped_in_parenthesis } from "../helpers.js";
+import { optional_parenthesis, paren_list, wrapped_in_parenthesis } from "../helpers.js";
 
 import create_rules from "./create.js";
 import alter_rules from "./alter.js";
@@ -15,10 +15,12 @@ import copy_rules from "./copy.js";
 import select_rules from "./select.js";
 import set_rules from "./set.js";
 import refresh_rules from "./refresh.js";
+import grant_rules from "./grant.js";
+import utility_rules from "./utility.js";
 
 export default {
 
-  block: $ => seq(
+  block: $ => prec.dynamic(1, seq(
     $.keyword_begin,
     optional(';'),
     repeat(
@@ -28,20 +30,101 @@ export default {
       ),
     ),
     $.keyword_end,
-  ),
+  )),
 
   statement: $ => seq(
     optional(seq(
       $.keyword_explain,
-      optional($.keyword_analyze),
-      optional($.keyword_verbose),
+      choice(
+        seq(
+          optional($.keyword_analyze),
+          optional($.keyword_verbose),
+        ),
+        paren_list($.explain_option, true),
+      ),
     )),
     choice(
       $._ddl_statement,
       $._dml_write,
       optional_parenthesis($._dml_read),
       $.while_statement,
+      $.savepoint_statement,
+      $.grant_statement,
+      $.revoke_statement,
+      $.call_statement,
+      $.use_statement,
+      $.describe_statement,
+      $.pragma_statement,
+      $.values,
+      $._utility_statement,
     ),
+  ),
+
+  // Postgres `EXPLAIN (ANALYZE, FORMAT JSON)`
+  explain_option: $ => seq(
+    field(
+      'name',
+      choice(
+        $.identifier,
+        $.keyword_analyze,
+        $.keyword_verbose,
+        $.keyword_format,
+      ),
+    ),
+    optional(
+      field(
+        'value',
+        choice(
+          $.literal,
+          $.identifier,
+          $.keyword_on,
+          $.keyword_off,
+          $.keyword_json,
+          $.keyword_xml,
+          $.keyword_text,
+        ),
+      ),
+    ),
+  ),
+
+  call_statement: $ => prec.right(seq(
+    $.keyword_call,
+    choice(
+      $.invocation,
+      $.object_reference,
+    ),
+  )),
+
+  use_statement: $ => seq(
+    $.keyword_use,
+    $.identifier,
+  ),
+
+  describe_statement: $ => seq(
+    choice($.keyword_describe, $.keyword_desc),
+    $.object_reference,
+  ),
+
+  // SQLite
+  pragma_statement: $ => prec.right(seq(
+    $.keyword_pragma,
+    $.object_reference,
+    optional(
+      choice(
+        seq('=', $._pragma_value),
+        seq('(', $._pragma_value, ')'),
+      ),
+    ),
+  )),
+
+  _pragma_value: $ => choice(
+    $.literal,
+    $.identifier,
+    $.keyword_on,
+    $.keyword_off,
+    $.keyword_full,
+    $.keyword_none,
+    $.keyword_default,
   ),
 
   while_statement: $ => prec.left(seq(
@@ -94,6 +177,8 @@ export default {
   ...merge_rules,
   ...refresh_rules,
   ...comment_rules,
+  ...grant_rules,
+  ...utility_rules,
 
   _dml_write: $ => seq(
     seq(
@@ -136,7 +221,8 @@ export default {
     choice(
       $._show_create,
       $.keyword_all, // Postgres
-      $._show_tables // trino/presto
+      $._show_tables, // trino/presto
+      $._show_object,
     ),
   ),
 
@@ -155,6 +241,29 @@ export default {
     ),
     $.object_reference
   ),
+
+  // Postgres `SHOW search_path` and the MySQL family `SHOW COLUMNS FROM t`
+  _show_object: $ => prec.right(seq(
+    choice(
+      $.object_reference,
+      $.keyword_index,
+      $.keyword_schemas,
+      $.keyword_functions,
+      $.keyword_privileges,
+    ),
+    optional(
+      seq(
+        choice($.keyword_from, $.keyword_in),
+        $.object_reference,
+      ),
+    ),
+    optional(
+      choice(
+        seq($.keyword_like, $._expression),
+        $.where,
+      ),
+    ),
+  )),
 
   _show_tables: $ => seq(
     $.keyword_tables,
