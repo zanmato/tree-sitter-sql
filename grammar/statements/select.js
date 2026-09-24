@@ -26,11 +26,15 @@ export default {
     ),
     wrapped_in_parenthesis(
       alias(
-        choice($._dml_read, $._dml_write),
+        choice($._dml_read, $._dml_write, $._cte_values),
         $.statement,
       ),
     ),
   ),
+
+  // A bare hidden wrapper, so the alias nests `values` inside `statement` the
+  // way a top-level VALUES statement is shaped rather than renaming it.
+  _cte_values: $ => seq($.values),
 
   set_operation: $ => seq(
     $._select_statement,

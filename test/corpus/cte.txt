@@ -668,3 +668,45 @@ FROM included_parts
       (relation
         (object_reference
           (identifier))))))
+
+================================================================================
+CTE with a column list over VALUES
+================================================================================
+
+WITH competitor(match_key, comp_size) AS (
+    VALUES
+        ('Anti-Plack', 335),
+        ('Balans', 112)
+)
+SELECT *
+FROM competitor;
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement
+    (keyword_with)
+    (cte
+      (identifier)
+      argument: (identifier)
+      argument: (identifier)
+      (keyword_as)
+      (statement
+        (values
+          (keyword_values)
+          (list
+            (literal)
+            (literal))
+          (list
+            (literal)
+            (literal)))))
+    (select
+      (keyword_select)
+      (select_expression
+        (term
+          value: (all_fields))))
+    (from
+      (keyword_from)
+      (relation
+        (object_reference
+          name: (identifier))))))
