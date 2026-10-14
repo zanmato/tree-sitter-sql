@@ -256,18 +256,24 @@ export default {
     seq(
       choice(
         $.subquery,
-        $.invocation,
+        $._function_relation,
         $.object_reference,
         wrapped_in_parenthesis($.values),
       ),
-      optional(
-        seq(
-          $._alias,
-          optional(alias($._column_list, $.list)),
-        ),
-      ),
+      optional($._relation_alias),
     ),
   ),
+
+  // Postgres: `func(...) [WITH ORDINALITY]` in FROM and after LATERAL
+  _function_relation: $ => prec.right(seq(
+    $.invocation,
+    optional(seq($.keyword_with, $.keyword_ordinality)),
+  )),
+
+  _relation_alias: $ => prec.right(seq(
+    $._alias,
+    optional(alias($._column_list, $.list)),
+  )),
 
   values: $ => seq(
     $.keyword_values,
@@ -337,19 +343,6 @@ export default {
       $.keyword_cross,
       $.keyword_join,
       $.relation,
-      optional(
-        seq(
-          $.keyword_with,
-          $.keyword_ordinality,
-          optional(
-            seq(
-              $.keyword_as,
-              field("alias", $.identifier),
-              paren_list($.identifier),
-            )
-          )
-        )
-      )
     )
   ),
 
@@ -365,18 +358,10 @@ export default {
     $.keyword_join,
     $.keyword_lateral,
     choice(
-      $.invocation,
+      $._function_relation,
       $.subquery,
     ),
-    optional(
-      choice(
-        seq(
-          $.keyword_as,
-          field('alias', $.identifier),
-        ),
-        field('alias', $.identifier),
-      ),
-    ),
+    optional($._relation_alias),
     $.keyword_on,
     choice(
       $._expression,
@@ -390,18 +375,10 @@ export default {
     $.keyword_join,
     $.keyword_lateral,
     choice(
-      $.invocation,
+      $._function_relation,
       $.subquery,
     ),
-    optional(
-      choice(
-        seq(
-          $.keyword_as,
-          field('alias', $.identifier),
-        ),
-        field('alias', $.identifier),
-      ),
-    ),
+    optional($._relation_alias),
   ),
 
   where: $ => seq(
